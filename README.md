@@ -1,152 +1,135 @@
-# dsh-usage
+# 🌊 dsh-usage
 
-为 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 网页端提供**常驻悬浮窗**、**可完全自定义的余额 / 用量面板**、**活跃热力图**与**双边用量对比**的 bundle 插件。
+A **persistent floating dock**, a **fully customizable balance / token-usage panel**, an **activity heatmap**, and a **dual-channel usage comparison** for the [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) Web GUI (`dsh web`).
 
-A persistent floating dock plus a fully customizable balance / token-usage panel, an activity heatmap, and a dual-channel comparison for the DeepSeek Harness Web GUI (`dsh web`).
+[🌏 中文](README.zh-CN.md) · [MIT](LICENSE)
 
-## ✨ 功能速览 / Feature tour
+## ✨ Feature tour
 
-### 🌊 常驻悬浮窗 / Persistent dock
+### 🌊 Persistent dock
 
-余额常绿、欠费才红；分隔线分区，右上角 ⚙ 开详情、↻ 一键刷新；sidebar 收起时自动退化为小巧的余额胶囊。
-
-The dock keeps your key numbers always visible — balance glows green (red only when out of credit), with a settings gear and one-click refresh in the corner; it collapses into a tiny balance pill when the sidebar is folded.
+Your key numbers stay visible at all times — balance glows green (red only when out of credit), rows are separated by hairlines, and a settings gear plus one-click refresh sit in the corner. When the sidebar collapses, the dock folds into a tiny balance pill.
 
 <table><tr>
 <td width="44%"><img src="docs/images/dock.png" alt="dsh-usage dock" width="100%"></td>
 <td>
 
-- 🟢 余额 / Balance — green when healthy, red when drained
-- 📊 今日 / 本月 / 命中 — today, month, cache-hit at a glance
-- ⚙ 齿轮开详情 · ↻ 一键刷新 — gear opens the panel, refresh re-queries
-- 🧲 内容随设置同步 — mirrors your pin choices instantly
+- 🟢 **Balance** — green when healthy, red when drained
+- 📊 **Today / Month / Cache hit** — glanceable token stats
+- ⚙ **Gear** opens the panel · ↻ refresh re-queries instantly
+- 🧲 **Mirrors your pins** — every change applies immediately
 
 </td>
 </tr></table>
 
-### 🎛️ 详情面板 / Detail panel — 七个 widget 全览
+### 🎛️ Detail panel — all seven widgets
 
-两列卡片布局，每个 widget 都有「详情 + 悬浮」两种表达，可拖拽排序、折叠、隐藏、pin。
-
-A two-column card layout — every widget has detail and compact forms, and can be drag-reordered, collapsed, hidden, or pinned.
+A two-column card layout; every widget has a detail and a compact form, and can be drag-reordered, collapsed, hidden, or pinned.
 
 <table><tr>
 <td>
 
-| Widget | 介绍 / What it does |
+| Widget | What it does |
 | --- | --- |
-| 💳 **余额** | 左大数字 + 右「可用/充值/赠送」三行明细，供应商可切换 |
-| 📊 **今日用量** | 今日 token 总数 + 输入/输出/缓存读分桶 |
-| 📈 **本月用量** | 本月累计 token + 分桶明细 |
-| 🎯 **缓存命中** | 今日与累计缓存命中率 |
-| ↔️ **通道比例** | DSH 通道 vs Claude Code 通道占比条 |
-| 📜 **用量记录** | 近 14 天按日列表，点击下钻到模型明细 |
-| 🔥 **活跃热力图** | 28 天 × 6 时段点块网格（横轴日期，纵轴 0–24 时） |
+| 💳 **Balance** | Big number on the left, available / topped-up / granted rows on the right; provider switchable |
+| 📊 **Today** | Today's tokens plus input / output / cache-read breakdown |
+| 📈 **This month** | Monthly tokens plus the same breakdown |
+| 🎯 **Cache hit** | Today's and all-time cache hit rates |
+| ↔️ **Channel share** | DSH channel vs Claude Code channel ratio bar |
+| 📜 **Usage log** | Last 14 days per-day list, click to drill into per-model detail |
+| 🔥 **Activity heatmap** | 28-day × 6-band dot grid (dates across, 0–24h down) |
 
 </td>
 <td width="46%"><img src="docs/images/panel.png" alt="dsh-usage panel" width="100%"></td>
 </tr></table>
 
-### 🎨 一切皆可自定义 / Everything customizable
+### 🎨 Everything customizable
 
-主色调（预设色板 + 取色器）、背景色、面板不透明度随时可调；拖拽排序、pin、折叠、隐藏，每个数字都按你的方式呈现——正如 DeepSeek Harness 的「一切皆插件」。
-
-Accent (presets + picker), background, and panel opacity are adjustable live; drag-reorder, pin, collapse, hide — every number presents your way, echoing DeepSeek Harness's "everything is a plugin" spirit.
+Accent (presets + color picker), background, and panel opacity are adjustable live. Drag-reorder, pin, collapse, hide — every number presents your way, echoing DeepSeek Harness's "everything is a plugin" spirit.
 
 <p align="center"><img src="docs/images/customizer.png" alt="dsh-usage customizer" width="78%"></p>
 
-## 一眼看懂
+## At a glance
 
-| | 能力 | 说明 |
+| | Feature | Notes |
 | --- | --- | --- |
-| 💳 | 常驻悬浮窗 | 左下角 dock 常显 pinned 项（余额、今日、本月、缓存命中），行间分隔线、角落齿轮与刷新钮；sidebar 收起时退化为单个余额胶囊按钮，点击展开 |
-| 🎨 | 一切皆可自定义 | 每个功能是独立 widget：pin、折叠、隐藏/恢复、**抓手拖拽排序**（虚线占位 + 平滑让位动画）、操作按钮悬停显现；主色调（预设+取色器）、背景色、面板不透明度均可调，设置持久化 localStorage |
-| 📊 | 余额与用量面板 | 详情面板：账户卡片（供应商切换 + 余额明细）、今日/本月/累计 Token（k/M/B 紧凑单位）、缓存命中率、用量记录与按模型下钻 |
-| 🔥 | 活跃热力图 | GitHub 风格点块：近 28 天 × 6 时段（每格 4 小时）+ 顶部日期标签，主色深浅表示使用频率 |
-| ↔️ | 通道比例 | DSH 通道 vs Claude Code 通道（解析 `~/.claude/projects` JSONL 增量聚合）用量占比与分布 |
-| 🔄 | 后台刷新 | 服务端启动即刷新，之后每 5 分钟更新余额、DSH Token 与 Claude Code 聚合 |
-| 🔒 | 本机安全边界 | 三个端点仅接受回环 GET；凭据只在服务端解析；上游强制 HTTPS、拒绝私网解析并固定 DNS 连接；Claude 日志只聚合数字，对话文本永不落盘 |
+| 💳 | Persistent dock | Pinned compacts always visible; collapses into a balance pill when the sidebar folds |
+| 🎨 | Everything customizable | Widgets: pin / collapse / hide / drag-reorder with a dashed placeholder and glide animation; accent, background, opacity; persisted in localStorage |
+| 📊 | Balance & usage panel | Provider picker, balance breakdown, today/month totals in k/M/B units, cache hit, usage log with per-model drilldown |
+| 🔥 | Activity heatmap | GitHub-style dots: 28 days × 6 four-hour bands with date labels |
+| ↔️ | Channel share | DSH channel vs Claude Code channel (incremental JSONL aggregation of `~/.claude/projects`) |
+| 🔄 | Background refresh | Refresh at startup, then every 5 minutes: balances, DSH tokens, Claude Code aggregation |
+| 🔒 | Local-only security | Three loopback-only GET endpoints; credentials resolved server-side; upstream forced HTTPS with DNS pinning; Claude logs aggregate numbers only — message text never leaves the machine |
 
-界面支持中文和英文。凭据由 Harness 从 `~/.dsh/.credentials.yaml` 解析，插件不读取、不缓存、不回传任何密钥。
+UI supports Chinese and English. Credentials come from Harness's `~/.dsh/.credentials.yaml`; the plugin never reads, caches, or echoes secrets.
 
-## 快速安装
+## Quick start
 
-需要 DeepSeek Harness `web` profile（`@deepseek-ai/dsh >= 0.1.0-rc.6`）。
-
-本地目录开发安装（link 协议，改代码无需重装）：
+Requires a DeepSeek Harness `web` profile (`@deepseek-ai/dsh >= 0.1.0-rc.6`).
 
 ```bash
-dsh plugin --profile web add "E:/path/to/DSH-Usage"
+dsh plugin --profile web add "github:Aisland-SJL/dsh-usage"
 ```
 
-远程安装（发布到 GitHub 后）：
-
-```bash
-dsh plugin --profile web add "github:<owner>/dsh-usage"
-```
-
-重启 `dsh web` 并在浏览器硬刷新，左下角出现常驻悬浮窗。更新 / 卸载：
+Restart `dsh web`, hard-refresh the browser, and the dock appears at the bottom-left. Update / remove:
 
 ```bash
 dsh plugin --profile web update dsh-usage
 dsh plugin --profile web remove dsh-usage
 ```
 
-## 凭据配置
+## Credentials
 
-余额型供应商的凭据引用，全部写在 `~/.dsh/.credentials.yaml`：
+Balance providers read credential references from `~/.dsh/.credentials.yaml`:
 
 ```yaml
-DEEPSEEK_API_KEY: sk-your-key-here            # DeepSeek 官方路由
-OPENROUTER_MANAGEMENT_KEY: sk-or-v1-...       # OpenRouter 账户（需要 Management Key，不是推理 Key）
-ZAI_API_KEY: your-zai-key                     # Z.ai 开放平台
+DEEPSEEK_API_KEY: sk-your-key-here            # official DeepSeek route
+OPENROUTER_MANAGEMENT_KEY: sk-or-v1-...       # OpenRouter account (Management Key, not the inference key)
+ZAI_API_KEY: your-zai-key                     # Z.ai open platform
 ```
 
-Moonshot / Kimi 等 `llm-pi-ai` 中的 provider profile 会自动发现并复用其 `apiKeyEnv`。没有公开余额接口的供应商显示「无公开余额接口」，不会猜测。
+Moonshot / Kimi profiles under `llm-pi-ai` are discovered automatically and reuse their `apiKeyEnv`. Providers without a public balance API show an explicit "no public balance interface" state — never a guess.
 
-## 支持的供应商
+## Supported providers
 
-| Provider | 上游接口 | 默认凭据引用 |
+| Provider | Upstream endpoint | Default credential ref |
 | --- | --- | --- |
 | DeepSeek | `GET {origin}/user/balance` | `DEEPSEEK_API_KEY` |
 | OpenRouter | `GET {origin}/api/v1/credits` | `OPENROUTER_MANAGEMENT_KEY` |
 | Moonshot / Kimi | `GET {origin}/v1/users/me/balance` | pi-ai provider `apiKeyEnv` |
-| Z.ai / 智谱 | `GET {origin}/api/paas/v4/balance` | `ZAI_API_KEY` |
+| Z.ai / GLM | `GET {origin}/api/paas/v4/balance` | `ZAI_API_KEY` |
 
 ## API
 
 | Method | Path | Response |
 | --- | --- | --- |
-| `GET` | `/api/usage/providers` | provider 列表、余额 scheme 与状态摘要 |
-| `GET` | `/api/usage/balance?provider=<id>` | 统一余额快照；`refresh=1` 强制刷新上游 |
-| `GET` | `/api/usage/usage` | 按日期/provider/model 聚合的 Token、缓存命中率、24 小时桶（`days[].hours`）与 Claude Code 通道（`claude`） |
+| `GET` | `/api/usage/providers` | Provider list, balance scheme, and status summary |
+| `GET` | `/api/usage/balance?provider=<id>` | Unified balance snapshot; `refresh=1` forces an upstream query |
+| `GET` | `/api/usage/usage` | Per-day/per-model token aggregates, cache hit rates, 24-hour buckets (`days[].hours`), and the Claude Code channel (`claude`) |
 
-非 GET 返回 `405`，非回环请求返回 `403`；所有响应均为 JSON 并带 `Cache-Control: no-cache`。
+Non-GET requests get `405`, non-loopback callers get `403`; every response is JSON with `Cache-Control: no-cache`.
 
-## 与 dsh-usage-stats 并存
-
-本插件与 [dsh-usage-stats](https://github.com/Ychris12138/dsh-usage-stats) 可同时安装：路由前缀（`/api/usage/` vs `/api/usage-stats/`）、缓存文件（`usage-cache.json` vs `usage-stats-cache.json`）、slot 注册 id（`usage` vs `usage-stats`）均不冲突。本插件的 Token 统计口径与 dsh-usage-stats 一致（provider-reported usage，同 turn/step 替换语义），迁移无痛。
-
-## 开发与验证
+## Development & testing
 
 ```bash
-npm install           # 仅 react/react-dom/jsdom 用于离线测试
-npm run check         # 全量语法检查
-npm test              # 81 个离线测试：余额 scheme、token 折叠、服务端边界、客户端、e2e 交互流、Claude 聚合
+npm install           # react/react-dom/jsdom for offline tests only
+npm run check         # syntax checks for every module and script
+npm test              # 81 offline tests: balance schemes, token folding, server boundary, client, e2e flows, Claude aggregation
 ```
 
-所有测试完全离线，不访问网络、不触碰真实 `~/.dsh`（服务端测试重定向 `DSH_HOME` 到临时目录）。真实 Claude 数据预演：`node scripts/validate-claude.mjs`。
+Tests are fully offline — no network, and the real `~/.dsh` is never touched (server tests redirect `DSH_HOME` to a temp dir). Dry-run the real Claude data: `node scripts/validate-claude.mjs`.
 
-## 隐私与安全
+## Privacy & security
 
-- API Key 永不进入浏览器响应、插件缓存或日志；凭据由 Harness credentials seam 在请求时解析。
-- 上游余额查询：强制 HTTPS、预解析 DNS 并拒绝回环/私网/链路本地/组播等非公网地址、连接固定到校验过的地址（防 DNS rebinding）、响应上限 1 MiB、超时 15 秒。
-- 用量缓存 `~/.dsh/storages/usage-cache.json` 只保存聚合 Token 与会话折叠游标，不保存提示词或回复内容。
-- 请勿将本插件端点经反向代理暴露到局域网或公网。
+- API keys never enter browser responses, plugin caches, or logs; they are resolved at request time through Harness's credentials seam.
+- Upstream balance queries: HTTPS enforced, DNS pre-resolved and private/loopback ranges rejected, connections pinned to the checked address (DNS-rebinding defense), 1 MiB response cap, 15 s timeout.
+- Usage caches under `~/.dsh/storages/` hold only aggregated token numbers and fold cursors — no prompts, no replies.
+- Claude Code logs are parsed line-by-line and discarded; only aggregated numbers reach the cache.
+- Do not expose these endpoints through a reverse proxy to LAN or the public internet.
 
-## 致谢 / Credits
+## Credits
 
-- [Ychris12138/dsh-usage-stats](https://github.com/Ychris12138/dsh-usage-stats)（MIT）：余额 scheme 与 Token 折叠语义、DSH bundle 插件结构与安全边界的参考实现。
+- [Ychris12138/dsh-usage-stats](https://github.com/Ychris12138/dsh-usage-stats) (MIT): reference for balance schemes, token folding semantics, bundle plugin structure, and the security boundary.
 
 ## License
 
