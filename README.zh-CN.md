@@ -2,7 +2,8 @@
 
 为 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 网页端（`dsh web`）提供**常驻悬浮窗**、**完全可自定义的余额 / 用量面板**、**活跃热力图**与**双边通道用量对比**的 bundle 插件。
 
-[English](README.md) · [MIT](LICENSE)
+[![README-English](https://img.shields.io/badge/README-English-1F6FEB?style=flat-square)](README.md)
+[![License](https://img.shields.io/badge/license-MIT-2da44e?style=flat-square)](LICENSE)
 
 ## ✨ 功能速览
 

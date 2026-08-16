@@ -2,7 +2,8 @@
 
 A **persistent floating dock**, a **fully customizable balance / token-usage panel**, an **activity heatmap**, and a **dual-channel usage comparison** for the [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) Web GUI (`dsh web`).
 
-[🌏 中文](README.zh-CN.md) · [MIT](LICENSE)
+[![README-中文](https://img.shields.io/badge/README-%E4%B8%AD%E6%96%87-crimson?style=flat-square)](README.zh-CN.md)
+[![License](https://img.shields.io/badge/license-MIT-2da44e?style=flat-square)](LICENSE)
 
 ## ✨ Feature tour
 
