@@ -1,4 +1,4 @@
-# DSH-Usage 项目规则
+# dsh-usage 项目规则
 
 ## 结构
 
