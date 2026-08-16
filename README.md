@@ -24,31 +24,36 @@ The dock keeps your key numbers always visible — balance glows green (red only
 </td>
 </tr></table>
 
-### 🎛️ 详情面板 / Detail panel
+### 🎛️ 详情面板 / Detail panel — 七个 widget 全览
 
-两列卡片布局：余额全宽（左大数字 + 右明细三行），今日与本月、命中与通道比例两两成行；抓手拖拽排序（虚线占位 + 平滑让位），操作按钮悬停才浮现；主色 / 背景 / 透明度全部可调。
+两列卡片布局，每个 widget 都有「详情 + 悬浮」两种表达，可拖拽排序、折叠、隐藏、pin。
 
-A two-column card layout: full-width balance (big number left, breakdown right), today/month and cache-hit/channel-share paired per row; drag any card to reorder (dashed placeholder + glide animation), hover to reveal actions; accent, background, and opacity are fully customizable.
+A two-column card layout — every widget has detail and compact forms, and can be drag-reordered, collapsed, hidden, or pinned.
 
 <table><tr>
 <td>
 
-- 🧩 七个 widget 各具繁简双表达 — seven widgets, detail + compact forms
-- ✋ 拖拽排序 · 折叠 · 隐藏 · pin — drag-reorder, collapse, hide, pin
-- 🎨 主题引擎：主色 / 背景 / 不透明度 — theme engine with live preview
-- ↔️ 通道比例：DSH × Claude Code — dual-channel share comparison
+| Widget | 介绍 / What it does |
+| --- | --- |
+| 💳 **余额** | 左大数字 + 右「可用/充值/赠送」三行明细，供应商可切换 |
+| 📊 **今日用量** | 今日 token 总数 + 输入/输出/缓存读分桶 |
+| 📈 **本月用量** | 本月累计 token + 分桶明细 |
+| 🎯 **缓存命中** | 今日与累计缓存命中率 |
+| ↔️ **通道比例** | DSH 通道 vs Claude Code 通道占比条 |
+| 📜 **用量记录** | 近 14 天按日列表，点击下钻到模型明细 |
+| 🔥 **活跃热力图** | 28 天 × 6 时段点块网格（横轴日期，纵轴 0–24 时） |
 
 </td>
-<td width="44%"><img src="docs/images/panel.png" alt="dsh-usage panel" width="100%"></td>
+<td width="46%"><img src="docs/images/panel.png" alt="dsh-usage panel" width="100%"></td>
 </tr></table>
 
-### 🔥 活跃热力图 / Activity heatmap
+### 🎨 一切皆可自定义 / Everything customizable
 
-GitHub 风格点块：横轴近 28 天（顶部标日期），纵轴 0–24 时（6 段 × 4 小时），主色深浅即使用频率。
+主色调（预设色板 + 取色器）、背景色、面板不透明度随时可调；拖拽排序、pin、折叠、隐藏，每个数字都按你的方式呈现——正如 DeepSeek Harness 的「一切皆插件」。
 
-GitHub-style dot grid: 28 days across (date labels on top) × 0–24h in six 4-hour bands; deeper accent = heavier usage.
+Accent (presets + picker), background, and panel opacity are adjustable live; drag-reorder, pin, collapse, hide — every number presents your way, echoing DeepSeek Harness's "everything is a plugin" spirit.
 
-<p align="center"><img src="docs/images/heatmap.png" alt="dsh-usage activity heatmap" width="78%"></p>
+<p align="center"><img src="docs/images/customizer.png" alt="dsh-usage customizer" width="78%"></p>
 
 ## 一眼看懂
 
