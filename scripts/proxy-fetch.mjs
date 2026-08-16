@@ -32,7 +32,7 @@ function decodeChunked(buf) {
 	return Buffer.concat(out);
 }
 
-export function fetchViaProxy(rawUrl, { proxyHost = "127.0.0.1", proxyPort = 7890, timeoutMs = 30000 } = {}) {
+export function fetchViaProxy(rawUrl, { proxyHost = "127.0.0.1", proxyPort = 7890, timeoutMs = 30000, method = "GET", headers = {}, body = "" } = {}) {
 	const url = new URL(rawUrl);
 	if (url.protocol !== "https:") throw new Error("only https URLs are supported");
 	const host = url.hostname;
@@ -73,7 +73,20 @@ export function fetchViaProxy(rawUrl, { proxyHost = "127.0.0.1", proxyPort = 789
 				reject(new Error(`tls: ${error.message}`));
 			});
 			tlsSocket.on("secureConnect", () => {
-				tlsSocket.write(`GET ${path} HTTP/1.1\r\nHost: ${host}\r\nUser-Agent: dsh-usage-proxy-fetch/1.0\r\nAccept: application/vnd.github+json\r\nConnection: close\r\n\r\n`);
+				const bodyBytes = Buffer.from(String(body ?? ""), "utf8");
+				const headerLines = [
+					`${method} ${path} HTTP/1.1`,
+					`Host: ${host}`,
+					"User-Agent: dsh-usage-proxy-fetch/1.0",
+					"Accept: application/vnd.github+json",
+					...Object.entries(headers).map(([key, value]) => `${key}: ${value}`),
+					`Content-Length: ${bodyBytes.length}`,
+					"Connection: close",
+					"",
+					""
+				];
+				tlsSocket.write(headerLines.join("\r\n"));
+				if (bodyBytes.length > 0) tlsSocket.write(bodyBytes);
 			});
 			tlsSocket.on("data", (chunk) => chunks.push(chunk));
 			tlsSocket.on("end", () => {
