@@ -387,6 +387,25 @@ await test("rail mode: balance button reveals the dock and scrim closes it", asy
 	assert.ok(q("[data-dsh-usage-rail]") !== null, "rail button back");
 });
 
+await test("dock grip drags the dock vertically and persists", async () => {
+	await freshMount();
+	const grip = q(".u_dockGrip");
+	assert.ok(grip !== null, "grip present top-left");
+	const dock = q("[data-dsh-usage-dock]");
+	assert.equal(dock.style.bottom, "72px", "default offset");
+	// Drag up 60px.
+	grip.dispatchEvent(new dom.window.MouseEvent("pointerdown", { bubbles: true, clientY: 200 }));
+	grip.dispatchEvent(new dom.window.MouseEvent("pointermove", { bubbles: true, clientY: 140 }));
+	await sleep(50);
+	assert.equal(dock.style.bottom, "132px", "dock moved up 60px");
+	// Release: further moves do nothing.
+	grip.dispatchEvent(new dom.window.MouseEvent("pointerup", { bubbles: true }));
+	await sleep(30);
+	grip.dispatchEvent(new dom.window.MouseEvent("pointermove", { bubbles: true, clientY: 100 }));
+	await sleep(50);
+	assert.equal(dock.style.bottom, "132px", "no movement after release");
+});
+
 await test("collapse hides a widget body, hide removes it and restore brings it back", async () => {
 	await freshMount();
 	q(".u_dockItem[data-widget=balance]").dispatchEvent(new dom.window.MouseEvent("click", { bubbles: true }));
