@@ -6,40 +6,49 @@ A persistent floating dock plus a fully customizable balance / token-usage panel
 
 ## ✨ 功能速览 / Feature tour
 
-> 🌊 **一眼余额，触手可及** — 左下角悬浮窗常显你关心的每一个数字；sidebar 收起时退化为一枚小巧的余额胶囊。
->
-> 🎛️ **一切皆可自定义** — 每个功能都是独立卡片：拖动排序、置顶悬浮、折叠隐藏、主色 / 背景 / 透明度随心调。
->
-> 🔥 **GitHub 式活跃热力图** — 近 28 天 × 6 时段的点块网格，一眼看出你的使用节律；再叠加 DSH 与 Claude Code 双通道的用量占比。
+### 🌊 常驻悬浮窗 / Persistent dock
 
-悬浮窗（Dock）· 数据一眼尽收：
+余额常绿、欠费才红；分隔线分区，右上角 ⚙ 开详情、↻ 一键刷新；sidebar 收起时自动退化为小巧的余额胶囊。
 
-```
-┌────────────────────────────┐
-│  余额            ¥128.00 🟢 │   ← 余额始终绿色，欠费才变红
-│  今日用量          42.8M    │
-├────────────────────────────┤
-│  本月用量           1.4B    │
-│  缓存命中          97.7%    │
-└────────────────────────────┘
-        ⚙ 齿轮开详情 · ↻ 一键刷新
-```
+The dock keeps your key numbers always visible — balance glows green (red only when out of credit), with a settings gear and one-click refresh in the corner; it collapses into a tiny balance pill when the sidebar is folded.
 
-详情面板（Panel）· 两列布局 + 拖拽排序：
+<table><tr>
+<td width="44%"><img src="docs/images/dock.png" alt="dsh-usage dock" width="100%"></td>
+<td>
 
-```
-┌──────────────────────────────┐
-│  余额（全宽·左金额右明细）       │
-├───────────────┬──────────────┤
-│  今日用量      │  本月用量      │
-├───────────────┼──────────────┤
-│  缓存命中      │  通道比例      │
-├───────────────┴──────────────┤
-│  用量记录（全宽·按日下钻）       │
-│  活跃热力图（28 天 × 6 时段）    │
-└──────────────────────────────┘
-   ▣ 拖拽任意卡片，虚线占位平滑让位
-```
+- 🟢 余额 / Balance — green when healthy, red when drained
+- 📊 今日 / 本月 / 命中 — today, month, cache-hit at a glance
+- ⚙ 齿轮开详情 · ↻ 一键刷新 — gear opens the panel, refresh re-queries
+- 🧲 内容随设置同步 — mirrors your pin choices instantly
+
+</td>
+</tr></table>
+
+### 🎛️ 详情面板 / Detail panel
+
+两列卡片布局：余额全宽（左大数字 + 右明细三行），今日与本月、命中与通道比例两两成行；抓手拖拽排序（虚线占位 + 平滑让位），操作按钮悬停才浮现；主色 / 背景 / 透明度全部可调。
+
+A two-column card layout: full-width balance (big number left, breakdown right), today/month and cache-hit/channel-share paired per row; drag any card to reorder (dashed placeholder + glide animation), hover to reveal actions; accent, background, and opacity are fully customizable.
+
+<table><tr>
+<td>
+
+- 🧩 七个 widget 各具繁简双表达 — seven widgets, detail + compact forms
+- ✋ 拖拽排序 · 折叠 · 隐藏 · pin — drag-reorder, collapse, hide, pin
+- 🎨 主题引擎：主色 / 背景 / 不透明度 — theme engine with live preview
+- ↔️ 通道比例：DSH × Claude Code — dual-channel share comparison
+
+</td>
+<td width="44%"><img src="docs/images/panel.png" alt="dsh-usage panel" width="100%"></td>
+</tr></table>
+
+### 🔥 活跃热力图 / Activity heatmap
+
+GitHub 风格点块：横轴近 28 天（顶部标日期），纵轴 0–24 时（6 段 × 4 小时），主色深浅即使用频率。
+
+GitHub-style dot grid: 28 days across (date labels on top) × 0–24h in six 4-hour bands; deeper accent = heavier usage.
+
+<p align="center"><img src="docs/images/heatmap.png" alt="dsh-usage activity heatmap" width="78%"></p>
 
 ## 一眼看懂
 

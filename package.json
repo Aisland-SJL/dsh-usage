@@ -23,7 +23,8 @@
     "lib/",
     "cordis.patch.yml",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "docs/images/"
   ],
   "dsh": {
     "bundle": {
