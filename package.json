@@ -1,7 +1,7 @@
 {
   "name": "dsh-usage",
   "description": "Persistent balance badge and token usage panel for the dsh web GUI",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": true,
   "keywords": [
     "deepseek",
@@ -40,14 +40,18 @@
     }
   },
   "scripts": {
-    "check": "node --check lib/index.js && node --check lib/usage.js && node --check lib/balance.js && node --check lib/safe-fetch.js && node --check lib/claude.js && node --check lib/client.js && node --check scripts/test-balance.mjs && node --check scripts/test-usage.mjs && node --check scripts/test-server.mjs && node --check scripts/test-client.mjs && node --check scripts/test-e2e.mjs && node --check scripts/test-claude.mjs",
-    "test": "node scripts/test-balance.mjs && node scripts/test-usage.mjs && node scripts/test-server.mjs && node scripts/test-client.mjs && node scripts/test-e2e.mjs && node scripts/test-claude.mjs",
+    "check": "node --check lib/index.js && node --check lib/usage.js && node --check lib/balance.js && node --check lib/safe-fetch.js && node --check lib/claude.js && node --check lib/client.js && node --check scripts/test-balance.mjs && node --check scripts/test-usage.mjs && node --check scripts/test-server.mjs && node --check scripts/test-client.mjs && node --check scripts/test-e2e.mjs && node --check scripts/test-claude.mjs && node --check scripts/test-package.mjs",
+    "test": "node scripts/test-balance.mjs && node scripts/test-usage.mjs && node scripts/test-server.mjs && node scripts/test-client.mjs && node scripts/test-e2e.mjs && node scripts/test-claude.mjs && node scripts/test-package.mjs",
     "test:balance": "node scripts/test-balance.mjs",
     "test:usage": "node scripts/test-usage.mjs",
     "test:server": "node scripts/test-server.mjs",
     "test:client": "node scripts/test-client.mjs",
     "test:e2e": "node scripts/test-e2e.mjs",
-    "test:claude": "node scripts/test-claude.mjs"
+    "test:claude": "node scripts/test-claude.mjs",
+    "test:package": "node scripts/test-package.mjs"
+  },
+  "dependencies": {
+    "@deepseek-ai/dsh-client-ui-primitives": "0.1.1-rc.2"
   },
   "devDependencies": {
     "jsdom": "^30.0.1",

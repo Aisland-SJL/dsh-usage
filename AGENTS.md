@@ -19,6 +19,7 @@
 - Claude JSONL 只聚合数字：对话文本永不落盘、永不进浏览器响应。
 - 凭据只经 Harness credentials seam 解析，永不进响应/缓存/日志。
 - 客户端无构建步骤：禁止引入 JSX 构建器依赖；改 `lib/client.js` 手写 `react_jsx_runtime` 调用。
+- `lib/client.js` 引用的非 DSH 基础前端包必须同时写入 `dependencies` 与 `dsh.client.inject`；发布前必须在无工作区 junction 的干净 hoisted profile 中安装最终包验证。
 - 不要用 PowerShell 正则替换修改 `lib/` 源码（曾因此清空过文件）；一律用编辑工具逐段修改。
 - 服务端改动必须重启 `dsh web` 才生效；纯客户端改动硬刷新即可。
 
@@ -26,7 +27,8 @@
 
 ```bash
 npm run check        # 全量语法检查
-npm test             # 81 个离线测试，全绿才可提交
+npm test             # 83 个离线测试，全绿才可提交
+npm run test:package # 发布依赖与 client inject 契约
 node scripts/validate-claude.mjs          # 真实 ~/.claude 数据预演
 node scripts/proxy-fetch.mjs <url>        # 沙箱内经 127.0.0.1:7890 代理拉取 https
 node scripts/github-research.mjs          # GitHub 星数调研（走代理，带重试）

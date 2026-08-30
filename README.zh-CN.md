@@ -72,6 +72,13 @@
 dsh plugin --profile web add "github:Aisland-SJL/dsh-usage"
 ```
 
+普通安装会按 manifest 自动安装运行时依赖 `@deepseek-ai/dsh-client-ui-primitives@0.1.1-rc.2`。如果开发时使用 `link:` 注册本地源码，需要在活动 profile 中安装同一精确版本，因为链接包不会自动补齐 profile 依赖树：
+
+```bash
+cd ~/.dsh/profiles/web
+pnpm add @deepseek-ai/dsh-client-ui-primitives@0.1.1-rc.2 --save-exact
+```
+
 重启 `dsh web` 并在浏览器硬刷新，左下角出现常驻悬浮窗。更新 / 卸载：
 
 ```bash
@@ -115,7 +122,8 @@ Moonshot / Kimi 等 `llm-pi-ai` 中的 provider profile 会自动发现并复用
 ```bash
 npm install           # 仅 react/react-dom/jsdom 用于离线测试
 npm run check         # 全量语法检查
-npm test              # 81 个离线测试：余额 scheme、token 折叠、服务端边界、客户端、e2e 交互流、Claude 聚合
+npm test              # 83 个离线测试：余额 scheme、token 折叠、服务端边界、客户端、e2e 交互流、Claude 聚合、发布契约
+npm run test:package # 运行时依赖与 client inject 契约
 ```
 
 所有测试完全离线，不访问网络、不触碰真实 `~/.dsh`（服务端测试重定向 `DSH_HOME` 到临时目录）。真实 Claude 数据预演：`node scripts/validate-claude.mjs`。

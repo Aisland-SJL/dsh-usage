@@ -72,6 +72,13 @@ Requires a DeepSeek Harness `web` profile (`@deepseek-ai/dsh >= 0.1.0-rc.6`).
 dsh plugin --profile web add "github:Aisland-SJL/dsh-usage"
 ```
 
+The normal install declares and installs `@deepseek-ai/dsh-client-ui-primitives@0.1.1-rc.2` as a runtime dependency. If you register a development checkout with `link:`, install the same exact package in the active profile because linked packages do not populate the profile dependency tree:
+
+```bash
+cd ~/.dsh/profiles/web
+pnpm add @deepseek-ai/dsh-client-ui-primitives@0.1.1-rc.2 --save-exact
+```
+
 Restart `dsh web`, hard-refresh the browser, and the dock appears at the bottom-left. Update / remove:
 
 ```bash
@@ -115,7 +122,8 @@ Non-GET requests get `405`, non-loopback callers get `403`; every response is JS
 ```bash
 npm install           # react/react-dom/jsdom for offline tests only
 npm run check         # syntax checks for every module and script
-npm test              # 81 offline tests: balance schemes, token folding, server boundary, client, e2e flows, Claude aggregation
+npm test              # 83 offline tests: balance schemes, token folding, server boundary, client, e2e flows, Claude aggregation, package contract
+npm run test:package # runtime dependency + client inject contract
 ```
 
 Tests are fully offline — no network, and the real `~/.dsh` is never touched (server tests redirect `DSH_HOME` to a temp dir). Dry-run the real Claude data: `node scripts/validate-claude.mjs`.
