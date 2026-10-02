@@ -1,6 +1,6 @@
 # 🌊 dsh-usage
 
-为 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 网页端（`dsh web`）提供**常驻悬浮窗**、**完全可自定义的余额 / 用量面板**、**活跃热力图**与**双边通道用量对比**的 bundle 插件。
+为 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 网页端（`dsh web`）与 Windows 官方桌面端提供**常驻悬浮窗**、**完全可自定义的余额 / 用量面板**、**活跃热力图**与**双边通道用量对比**的 bundle 插件。具体宿主范围见下方说明。
 
 [![README-English](https://img.shields.io/badge/README-English-1F6FEB?style=flat-square)](README.md)
 [![License](https://img.shields.io/badge/license-MIT-2da44e?style=flat-square)](LICENSE)
@@ -62,24 +62,33 @@
 | 🔄 | 后台刷新 | 启动即刷新，之后每 5 分钟更新余额、DSH Token 与 Claude Code 聚合 |
 | 🔒 | 本机安全边界 | 三个端点仅接受回环 GET；凭据只在服务端解析；上游强制 HTTPS、拒绝私网解析并固定 DNS 连接；Claude 日志只聚合数字，对话文本永不落盘 |
 
-界面支持中文和英文。凭据由 Harness 从 `~/.dsh/.credentials.yaml` 解析，插件不读取、不缓存、不回传任何密钥。
+界面支持中文和英文。余额查询通过 Harness 凭据服务在内存中取得密钥，密钥不写入插件缓存或浏览器响应。
 
 ## 快速安装
 
-需要 DeepSeek Harness `web` profile（`@deepseek-ai/dsh >= 0.1.0-rc.6`）。
+**v0.3.1 面向 DeepSeek Harness 0.2.0-rc.2** 的网页端与 Windows 官方桌面端。旧接口分支保留，但尚未完成 0.1.x 宿主整套回归；旧宿主用户请先保留 v0.3.0，不把本版视为对所有 DSH 版本的兼容保证。Windows 之外的桌面平台未做真机验收。
+
+桌面沿用客户端 `platform: web` 契约，但安装应使用该应用自带 CLI 与 `desktop` profile，安装前须完整退出，之后手动重新打开，不自动杀进程或重启。升级提示会按当前环境选择 profile；两端即使共享 DSH_HOME，插件外观设置也按浏览器来源分别保存。离线测试不等于所有账号、所有历史会话与桌面功能均已验收。
 
 ```bash
 dsh plugin --profile web add "github:Aisland-SJL/dsh-usage"
 ```
 
-普通安装会按 manifest 自动安装运行时依赖 `@deepseek-ai/dsh-client-ui-primitives@0.1.1-rc.2`。如果开发时使用 `link:` 注册本地源码，需要在活动 profile 中安装同一精确版本，因为链接包不会自动补齐 profile 依赖树：
+也可安装 Release 的固定名 TGZ（发版后可用；需要可复现安装时可改用对应 tag 下的版本化资产）：
 
 ```bash
-cd ~/.dsh/profiles/web
-pnpm add @deepseek-ai/dsh-client-ui-primitives@0.1.1-rc.2 --save-exact
+dsh plugin --profile web add "https://github.com/Aisland-SJL/dsh-usage/releases/latest/download/dsh-usage.tgz"
 ```
 
-重启 `dsh web` 并在浏览器硬刷新，左下角出现常驻悬浮窗。更新 / 卸载：
+桌面端先完整退出，再用**该桌面端自带的 dsh CLI** 执行下列命令；不要用网页端 CLI 修改桌面 profile：
+
+```bash
+dsh plugin --profile desktop add "https://github.com/Aisland-SJL/dsh-usage/releases/latest/download/dsh-usage.tgz"
+```
+
+本版声明运行时依赖 `@deepseek-ai/dsh-client-ui-primitives@0.2.0-rc.2`，正常包安装由包管理器解析，不需手工补装官方组件。使用 `link:` 时先核对活动 profile 的依赖与宿主版本；不要为消除警告把另一版本官方界面组件装进宿主。
+
+网页端安装后完整重启 `dsh web` 并硬刷新；桌面端手动重新打开。用 GitHub 来源安装的更新 / 卸载命令如下（TGZ 来源升级请重新执行对应的 `add` 命令）：
 
 ```bash
 dsh plugin --profile web update dsh-usage
@@ -88,7 +97,7 @@ dsh plugin --profile web remove dsh-usage
 
 ## 凭据配置
 
-余额型供应商的凭据引用写在 `~/.dsh/.credentials.yaml`：
+请通过 Harness 配置凭据引用。旧宿主使用过 `~/.dsh/.credentials.yaml`，新版或自定义 `DSH_HOME` 不应按此路径手工猜测：
 
 ```yaml
 DEEPSEEK_API_KEY: sk-your-key-here            # DeepSeek 官方路由
@@ -97,6 +106,12 @@ ZAI_API_KEY: your-zai-key                     # Z.ai 开放平台
 ```
 
 Moonshot / Kimi 等 `llm-pi-ai` 中的 provider profile 会自动发现并复用其 `apiKeyEnv`。没有公开余额接口的供应商显示「无公开余额接口」，不会猜测。
+
+0.2 按供应商目录的条目 id 读取已脱敏的实时设置；支持的 pi-ai 路由也可通过凭据服务读取 API-key 类型记录，不解释 OAuth/grant。OpenRouter 仍需要 Management Key，不能拿已存的推理密钥替代；缺少端点或可用凭据时明确显示未配置，不借用其他路由的密钥。
+
+隔离测试可在插件条目设置 `config.balanceEnabled: false`，停止凭据解析与上游余额请求（默认仍开启）。必须显式将 `CLAUDE_CONFIG_DIR` 指向合成测试目录，否则原有默认行为仍扫描 `~/.claude/projects`。用量缓存升级为 v4，旧版缓存自动重算。0.2 上未变化的会话复用缓存、变化的会话经只读 handle 重新折叠，fork 继承历史不重复计费。真实余额和付费模型调用仍需独立验收。
+
+单条会话读不过时不再拖垮其余统计。响应的 `coverage` 描述宿主列出的会话，区分完整、部分与不可用，并列出纳入/未纳入的会话。部分统计显示明确告警和仅可读小计（≥）；全部读不过时 `total: null`、界面显示「—」，不按零计算。失败记录清除旧小计、下次重试；这不等于修复宿主对旧格式的兼容，也不改写旧日志。会话列表整体读取失败仍返回错误。
 
 ## 支持的供应商
 
@@ -113,7 +128,7 @@ Moonshot / Kimi 等 `llm-pi-ai` 中的 provider profile 会自动发现并复用
 | --- | --- | --- |
 | `GET` | `/api/usage/providers` | provider 列表、余额 scheme 与状态摘要 |
 | `GET` | `/api/usage/balance?provider=<id>` | 统一余额快照；`refresh=1` 强制刷新上游 |
-| `GET` | `/api/usage/usage` | 按日期/provider/model 聚合的 Token、缓存命中率、24 小时桶（`days[].hours`）与 Claude Code 通道（`claude`） |
+| `GET` | `/api/usage/usage` | 按日期/provider/model 聚合的 Token、缓存命中率、24 小时桶（`days[].hours`）、统计覆盖情况（`coverage`）与 Claude Code 通道（`claude`） |
 
 非 GET 返回 `405`，非回环请求返回 `403`；所有响应均为 JSON 并带 `Cache-Control: no-cache`。
 
@@ -122,7 +137,7 @@ Moonshot / Kimi 等 `llm-pi-ai` 中的 provider profile 会自动发现并复用
 ```bash
 npm install           # 仅 react/react-dom/jsdom 用于离线测试
 npm run check         # 全量语法检查
-npm test              # 83 个离线测试：余额 scheme、token 折叠、服务端边界、客户端、e2e 交互流、Claude 聚合、发布契约
+npm test              # 112 个离线测试：余额 scheme、token 折叠、服务端边界、客户端、e2e 交互流、Claude 聚合、发布与 0.2 契约
 npm run test:package # 运行时依赖与 client inject 契约
 ```
 

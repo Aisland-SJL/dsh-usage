@@ -100,6 +100,26 @@ await test("collect: missing claude dir reports disabled", async () => {
 	await rm(home.dir, { recursive: true, force: true });
 });
 
+await test("collect: absent directory stays disabled inside the refresh window", async () => {
+	resetClaudeState();
+	const home = await freshHome();
+	try {
+		const missing = { ...depsFor(home), claudeDir: join(home.dir, "nope"), refreshMs: 300000 };
+		assert.deepEqual(await collectClaudeUsage(missing), { enabled: false });
+		assert.deepEqual(await collectClaudeUsage(missing), { enabled: false });
+	} finally { await rm(home.dir, { recursive: true, force: true }); }
+});
+
+await test("collect: directory/cache changes never reuse another channel's stats", async () => {
+	resetClaudeState();
+	const home = await freshHome();
+	try {
+		await writeFile(join(home.projects, "synthetic.jsonl"), assistantLine({ input_tokens: 12, output_tokens: 3 }));
+		assert.equal((await collectClaudeUsage({ ...depsFor(home), refreshMs: 300000 })).total.tokens, 15);
+		assert.deepEqual(await collectClaudeUsage({ ...depsFor(home), claudeDir: join(home.dir, "nope"), cachePath: join(home.dir, "second-cache.json"), refreshMs: 300000 }), { enabled: false });
+	} finally { await rm(home.dir, { recursive: true, force: true }); }
+});
+
 await test("collect: full scan folds every assistant usage into day and hour buckets", async () => {
 	resetClaudeState();
 	const home = await freshHome();

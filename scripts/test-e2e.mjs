@@ -17,7 +17,8 @@ import { createRoot } from "react-dom/client";
 import { Simulate, act } from "react-dom/test-utils";
 
 const here = dirname(fileURLToPath(import.meta.url));
-const clientSource = readFileSync(join(here, "..", "lib", "client.js"), "utf8");
+// A final-package check can point this UI test at the installed bundle.
+const clientSource = readFileSync(process.argv[2] ?? join(here, "..", "lib", "client.js"), "utf8");
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 let passed = 0;
@@ -122,6 +123,7 @@ const USAGE = {
 
 const fetchCalls = [];
 const okResponse = (data) => ({ ok: true, status: 200, json: async () => data });
+let usageResponse = () => okResponse(USAGE);
 dom.window.fetch = async (input) => {
 	const url = String(input);
 	fetchCalls.push(url);
@@ -130,7 +132,7 @@ dom.window.fetch = async (input) => {
 		const account = url.includes("openrouter") ? OPENROUTER_ACCOUNT : ACCOUNT;
 		return okResponse({ ok: true, account });
 	}
-	if (url.includes("/api/usage/usage")) return okResponse(USAGE);
+	if (url.includes("/api/usage/usage")) return usageResponse();
 	throw new Error(`unexpected fetch: ${url}`);
 };
 
@@ -503,6 +505,93 @@ await test("closing the panel keeps the dock alive", async () => {
 	assert.equal(q("[data-dsh-usage-panel]"), null, "panel closed");
 	assert.ok(q("[data-dsh-usage-dock]") !== null, "dock persists");
 	assert.equal(qa(".u_dockItem").length, 4, "pinned compacts persist");
+});
+
+await test("partial coverage uses a compact expandable notice and preserves exact readable subtotals", async () => {
+	usageResponse = () => okResponse({ ...USAGE, coverage: { status: "partial", totalSessions: 3, countedSessions: 2, skippedSessions: [{ sessionId: "old", reason: "unsupported-format" }] } });
+	await freshMount();
+	q(".u_dockItem[data-widget=balance]").click();
+	await sleep(100);
+	const notice = q('.u_coverage');
+	assert.equal(notice.tagName, "DETAILS");
+	assert.equal(notice.open, false, "full explanation starts collapsed");
+	assert.equal(q('.u_coverageLabel').textContent, "部分统计 · 1 条会话未计入");
+	assert.equal(q('.u_coverageLabel').getAttribute("role"), "status");
+	assert.equal(q('.u_error'), null, "partial coverage is not styled as an error banner");
+	assert.equal(getComputedStyle(notice).backgroundColor, "rgba(0, 0, 0, 0)", "no yellow background");
+	assert.equal(getComputedStyle(q('.u_coverageDetails')).display, "none");
+	const callsBeforeExpand = fetchCalls.length;
+	q('.u_coverageSummary').click();
+	assert.equal(notice.open, true, "summary click opens the native disclosure");
+	assert.equal(getComputedStyle(q('.u_coverageDetails')).display, "flex");
+	assert.equal(q('.u_coverageText').textContent, "仅计入可读记录，数值为下限");
+	assert.equal(getComputedStyle(q('.u_coverageDetails')).alignItems, "center", "explanation and retry share one centered row");
+	assert.equal(getComputedStyle(q('.u_coverageText')).whiteSpace, "nowrap", "short explanation stays on one line");
+	assert.equal(getComputedStyle(q('.u_coverageDetails .u_retry')).lineHeight, "18px", "retry matches the explanation line height");
+	q('.u_coverageSummary').click();
+	assert.equal(notice.open, false, "second click collapses the explanation");
+	assert.equal(fetchCalls.length, callsBeforeExpand, "disclosure does not reload data");
+	assert.equal(q('.u_widget[data-widget=today] .u_statBig').textContent, "≥1,150");
+	assert.equal(q('.u_dockItem[data-widget=month] .u_floatValue').textContent, "≥1,150");
+	assert.equal(q('.u_dualBar'), null);
+	assert.equal(q('.u_widget[data-widget=balance] .u_balanceAmount').textContent, "¥128.00");
+	usageResponse = () => okResponse(USAGE);
+	q('.u_coverageSummary').click();
+	q('.u_coverageDetails .u_retry').click();
+	await sleep(100);
+	assert.equal(q('.u_coverage'), null, "retry removes the notice when coverage recovers");
+	assert.equal(q('.u_widget[data-widget=today] .u_statBig').textContent, "1.1k");
+});
+
+await test("all unreadable records show unavailable, never zero tokens or a zero activity heatmap", async () => {
+	usageResponse = () => okResponse({ ok: true, days: [], total: null, coverage: { status: "unavailable", totalSessions: 1, countedSessions: 0, skippedSessions: [{ sessionId: "old", reason: "read-failed" }] } });
+	await freshMount();
+	q(".u_dockItem[data-widget=balance]").click();
+	await sleep(100);
+	assert.equal(q('.u_widget[data-widget=today] .u_statBig').textContent, "—");
+	assert.equal(q('.u_widget[data-widget=month] .u_statBig').textContent, "—");
+	assert.equal(q('.u_coverageLabel').textContent, "用量暂不可用 · 1 条会话未计入");
+	assert.ok(q('.u_coverageDetails').textContent.includes("未按零用量计算"));
+	assert.equal(q('.u_coverage').open, false);
+	assert.ok(q('.u_widget[data-widget=recent]').textContent.includes(t("usage.unavailable")));
+	assert.equal(q('.u_heatGrid'), null);
+	usageResponse = () => okResponse(USAGE);
+});
+
+await test("HTTP failure shows unavailable and balance stays independent", async () => {
+	usageResponse = () => ({ ok: false, status: 500 });
+	await freshMount();
+	q(".u_dockItem[data-widget=balance]").click();
+	await sleep(100);
+	assert.ok(q('.u_error').textContent.includes("HTTP 500"));
+	assert.equal(q('.u_widget[data-widget=today] .u_statBig').textContent, "—");
+	assert.equal(q('.u_widget[data-widget=balance] .u_balanceAmount').textContent, "¥128.00");
+	usageResponse = () => okResponse(USAGE);
+	q('.u_error .u_retry').click();
+	await sleep(100);
+	assert.equal(q('.u_error'), null);
+	assert.equal(q('.u_widget[data-widget=today] .u_statBig').textContent, "1.1k");
+});
+
+await test("failed refresh clears stale totals instead of presenting them as current statistics", async () => {
+	await freshMount();
+	q(".u_dockItem[data-widget=balance]").click();
+	await sleep(100);
+	usageResponse = () => ({ ok: false, status: 500 });
+	q('[data-dsh-usage-panel] .u_iconButton[aria-label="' + t("action.refresh") + '"]').click();
+	await sleep(100);
+	assert.equal(q('.u_widget[data-widget=today] .u_statBig').textContent, "—");
+	usageResponse = () => okResponse(USAGE);
+});
+
+await test("genuinely empty successful usage still displays zero, without a coverage warning", async () => {
+	usageResponse = () => okResponse({ ok: true, days: [], total: { tokens: 0 }, coverage: { status: "complete", totalSessions: 0, countedSessions: 0, skippedSessions: [] } });
+	await freshMount();
+	q(".u_dockItem[data-widget=balance]").click();
+	await sleep(100);
+	assert.equal(q('.u_widget[data-widget=today] .u_statBig').textContent, "0");
+	assert.equal(q('.u_error'), null);
+	usageResponse = () => okResponse(USAGE);
 });
 
 //#endregion
