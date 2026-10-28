@@ -66,7 +66,7 @@ UI supports Chinese and English. Balance requests resolve keys in memory through
 
 ## Quick start
 
-**v0.3.1 targets DeepSeek Harness 0.2.0-rc.2**, on Web and official Windows Desktop. Legacy service branches remain, but a full 0.1.x-host regression has not been performed: keep v0.3.0 on older hosts rather than assuming universal compatibility. Desktop platforms other than Windows have not been tested on real machines.
+**v0.4.0 supports DeepSeek Harness 0.1.x and 0.2.0-rc.2**, on Web and official Windows Desktop. Live sessions are read through whichever Session API the host exposes (`events`, `snapshotEvents`, or `ownEvents`); persisted logs use `readFrom` (0.1.x) or the 0.2 read handle. A host that exposes no readable log API degrades to a reported skip instead of an HTTP 500 — it is not silently counted as zero. Real-machine 0.1.x verification is pending community retest; Desktop platforms other than Windows have not been tested on real machines.
 
 Desktop uses the client `platform: web` contract, but installation belongs to the `desktop` profile and must use that app's bundled CLI while Desktop is fully quit. Open the app manually afterward; do not kill or restart it automatically. Update prompts select the active profile. Plugin appearance settings are origin-specific, even when profiles share DSH_HOME. Offline tests do not establish acceptance for every account, historical session, or Desktop feature.
 
@@ -111,7 +111,7 @@ On 0.2 the provider directory addresses redacted live settings by entry id. Supp
 
 For isolated tests set the plugin entry's `config.balanceEnabled: false` to prevent credential resolution and upstream balance requests (default: enabled). Set `CLAUDE_CONFIG_DIR` explicitly to a synthetic test directory; otherwise the existing default still scans `~/.claude/projects`. Token cache v4 rebuilds older caches. On 0.2 unchanged session revisions are cached, changed sessions are refolded through read-only handles, and inherited fork history is not billed twice. Real account queries and paid model runs are separate acceptance work.
 
-Unreadable sessions no longer block the rest of the aggregation. The response's `coverage` describes the sessions listed by the host: `complete`, `partial`, or `unavailable`, with counted/skipped sessions. Partial totals carry a warning and show only readable subtotals (≥); if no session can be read, totals are unavailable (`total: null`, “—” in the UI), not zero. Failed records are retried without retaining stale counts. This does not repair unsupported historical formats or rewrite their logs. A failure to list sessions still returns an error.
+Unreadable sessions no longer block the rest of the aggregation. The response's `coverage` describes the sessions listed by the host: `complete`, `partial`, or `unavailable`, with counted/skipped sessions and per-session reasons (`unsupported-format`, `unsupported-session-api`, `unsupported-host`, `read-failed`). Partial totals show the exact readable subtotal plus an expandable coverage notice — values are not prefixed with "≥". If no session can be read, totals are unavailable (`total: null`, “—” in the UI), not zero. Failed records are retried without retaining stale counts. This does not repair unsupported historical formats or rewrite their logs. A failure to list sessions still returns an error.
 
 ## Supported providers
 
@@ -137,7 +137,8 @@ Non-GET requests get `405`, non-loopback callers get `403`; every response is JS
 ```bash
 npm install           # react/react-dom/jsdom for offline tests only
 npm run check         # syntax checks for every module and script
-npm test              # 112 offline tests: balance schemes, token folding, server boundary, client, e2e flows, Claude aggregation, package + 0.2 contracts
+npm test              # 117 offline tests: balance schemes, token folding, server boundary, client, e2e flows, Claude aggregation, package + 0.2 contracts, host compatibility
+npm run test:compat   # 0.1.x / 0.1.5-shaped Session API contracts
 npm run test:package # runtime dependency + client inject contract
 ```
 
