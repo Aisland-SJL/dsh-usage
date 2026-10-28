@@ -38,7 +38,7 @@ node scripts/github-research.mjs          # GitHub 星数调研（走代理，�
 
 ## 关键约定
 
-- Desktop 0.2.0-rc.2 开发候选保留 client.platform=web；桌面包管理只能用桌面自带 CLI 与 desktop profile。升级提示按 dsh-app: 区分环境，不把网页端的更新与重启指令给桌面用户；离线通过不等于真实桌面验收。
+- Desktop 宿主实测为 0.2.1-rc.3（npm latest 标签为 0.2.1-rc.2，desktop 走 nightly 通道）；开发候选保留 client.platform=web。桌面包管理只能用桌面自带 CLI 与 desktop profile。升级提示按 dsh-app: 区分环境，不把网页端的更新与重启指令给桌面用户；离线通过不等于真实桌面验收。
 - 客户端设置持久化于 localStorage `dsh-usage:settings:v1`；`defaultSettings()` 即产品预设，改动需同步 e2e 断言。
 - 服务端缓存版本变更必须同步升 `CACHE_VERSION`（usage-cache.json v4 / claude cache v1），旧缓存自动失效重算。
 - 单条会话读取/关闭失败不得拖垮其他用量；失败记录清除旧折叠缓存且下次重试，API 必须返回 coverage（宿主列出的 totalSessions/countedSessions/skippedSessions，附 per-session reason）。partial 显示精确的可读小计 + 可展开告警，数值不加「≥」前缀；全部为 `unsupported-format`（旧格式遗留）时告警降级为静默样式且不阻塞通道比例，其他原因才显示警示点；unavailable 的 total=null、界面为「—」，不可当成零或宣称完整统计；会话列表整体失败仍为错误。只经官方 read handle，不降级解压/改写真实历史日志。
