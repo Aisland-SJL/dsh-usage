@@ -73,7 +73,7 @@ export function fetchViaProxy(rawUrl, { proxyHost = "127.0.0.1", proxyPort = 789
 				reject(new Error(`tls: ${error.message}`));
 			});
 			tlsSocket.on("secureConnect", () => {
-				const bodyBytes = Buffer.from(String(body ?? ""), "utf8");
+				const bodyBytes = Buffer.isBuffer(body) ? body : Buffer.from(String(body ?? ""), "utf8");
 				const headerLines = [
 					`${method} ${path} HTTP/1.1`,
 					`Host: ${host}`,
