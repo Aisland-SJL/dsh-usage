@@ -32,7 +32,7 @@ function decodeChunked(buf) {
 	return Buffer.concat(out);
 }
 
-export function fetchViaProxy(rawUrl, { proxyHost = "127.0.0.1", proxyPort = 7890, timeoutMs = 30000, method = "GET", headers = {}, body = "" } = {}) {
+export function fetchViaProxy(rawUrl, { proxyHost = "127.0.0.1", proxyPort = 7890, timeoutMs = 30000, method = "GET", headers = {}, body = "", maxRedirects = 3 } = {}) {
 	const url = new URL(rawUrl);
 	if (url.protocol !== "https:") throw new Error("only https URLs are supported");
 	const host = url.hostname;
@@ -95,6 +95,16 @@ export function fetchViaProxy(rawUrl, { proxyHost = "127.0.0.1", proxyPort = 789
 				const headEnd = raw.indexOf("\r\n\r\n");
 				const head = headEnd === -1 ? "" : raw.slice(0, headEnd).toString("latin1");
 				const status = (head.match(/^HTTP\/1\.[01] (\d+)/) || [])[1];
+				// Follow asset/CDN redirects (e.g. releases/download → objects.githubusercontent.com).
+				if (["301", "302", "303", "307", "308"].includes(status) && maxRedirects > 0) {
+					const location = (head.match(/^location:\s*(.+)$/im) || [])[1]?.trim();
+					if (location !== void 0 && location !== "") {
+						resolve(fetchViaProxy(new URL(location, rawUrl).href, {
+							proxyHost, proxyPort, timeoutMs, method: "GET", headers, body: "", maxRedirects: maxRedirects - 1
+						}));
+						return;
+					}
+				}
 				if (status === void 0 || Number(status) >= 400) {
 					reject(new Error(`HTTP ${status ?? "invalid response"}`));
 					return;
