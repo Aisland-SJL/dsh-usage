@@ -9,12 +9,13 @@
 ## 改进
 
 - **精确可读小计。** 部分统计不再给数值加「≥」前缀：今日 / 本月 / 当日条目直接显示可确认的精确小计；面板底部保留可展开的覆盖度告警（含每个被跳过会话的原因）。「全部不可读」时仍显示「—」，不冒充零。
+- **旧格式静默。** 若被跳过的会话全部是 `unsupported-format`（0.1 压缩日志遗留），告警降级为静默样式（无警示点）且通道比例照常计算；`read-failed` / `unsupported-session-api` / `unsupported-host` 仍显示警示点并暂停比例。
 - coverage 的 `skippedSessions[].reason` 增加 `unsupported-session-api` 与 `unsupported-host` 两种取值，便于定位宿主差异。
 
 ## 测试
 
 - 新增 `scripts/test-compat.mjs`（5 项）：0.1.x events 数组、0.1.5 snapshotEvents、ownEvents、无 reader 宿主、抛错会话。
-- 全量离线回归 **117 项全绿**（余额 11 / 用量 15 / 服务端 22 / 客户端 8 / e2e 20 / Claude 13 / 发布 1 / 0.2 契约 22 / 宿主兼容 5）。
+- 全量离线回归 **118 项全绿**（余额 11 / 用量 15 / 服务端 22 / 客户端 8 / e2e 21 / Claude 13 / 发布 1 / 0.2 契约 22 / 宿主兼容 5）。
 
 ## 升级与边界
 

@@ -27,7 +27,7 @@
 
 ```bash
 npm run check        # 全量语法检查
-npm test             # 117 个离线测试，全绿才可提交
+npm test             # 118 个离线测试，全绿才可提交
 npm run test:package # 发布依赖与 client inject 契约
 npm run test:modern  # 22 项 0.2 契约回归；参数可指定安装目录和固定 SDK 的 node_modules
 npm run test:compat  # 5 项宿主兼容契约：events / snapshotEvents / ownEvents / 无 reader
@@ -41,7 +41,7 @@ node scripts/github-research.mjs          # GitHub 星数调研（走代理，�
 - Desktop 0.2.0-rc.2 开发候选保留 client.platform=web；桌面包管理只能用桌面自带 CLI 与 desktop profile。升级提示按 dsh-app: 区分环境，不把网页端的更新与重启指令给桌面用户；离线通过不等于真实桌面验收。
 - 客户端设置持久化于 localStorage `dsh-usage:settings:v1`；`defaultSettings()` 即产品预设，改动需同步 e2e 断言。
 - 服务端缓存版本变更必须同步升 `CACHE_VERSION`（usage-cache.json v4 / claude cache v1），旧缓存自动失效重算。
-- 单条会话读取/关闭失败不得拖垮其他用量；失败记录清除旧折叠缓存且下次重试，API 必须返回 coverage（宿主列出的 totalSessions/countedSessions/skippedSessions，附 per-session reason）。partial 显示精确的可读小计 + 可展开告警，数值不加「≥」前缀；unavailable 的 total=null、界面为「—」，不可当成零或宣称完整统计；会话列表整体失败仍为错误。只经官方 read handle，不降级解压/改写真实历史日志。
+- 单条会话读取/关闭失败不得拖垮其他用量；失败记录清除旧折叠缓存且下次重试，API 必须返回 coverage（宿主列出的 totalSessions/countedSessions/skippedSessions，附 per-session reason）。partial 显示精确的可读小计 + 可展开告警，数值不加「≥」前缀；全部为 `unsupported-format`（旧格式遗留）时告警降级为静默样式且不阻塞通道比例，其他原因才显示警示点；unavailable 的 total=null、界面为「—」，不可当成零或宣称完整统计；会话列表整体失败仍为错误。只经官方 read handle，不降级解压/改写真实历史日志。
 - 宿主兼容：实时会话按 events / snapshotEvents / ownEvents 顺序探测，认不出则该会话计入 skipped（reason unsupported-session-api），绝不让整条端点 500；持久化日志按 open(0.2) / readFrom(0.1.x) 探测，都没有时 skipped（reason unsupported-host）。新增宿主形状必须补 test-compat 用例。
 - 0.2 会话经 persistence.list/open('read')/read(0)/finally close；变化的 revision 全量重算、fork 继承前缀不重复计费，opaque revision 只留内存且按 service identity 隔离。旧 events/readFrom 分支保留，但候选包的整套旧宿主 GUI 尚未复验。
 - 隔离验收必须设 config.balanceEnabled=false（禁止解析凭据与上游请求），同时显式隔离 CLAUDE_CONFIG_DIR；不能运行真实 Claude 验证脚本或把离线桩测试写成真实账号验收。

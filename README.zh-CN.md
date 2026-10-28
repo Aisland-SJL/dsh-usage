@@ -111,7 +111,7 @@ Moonshot / Kimi 等 `llm-pi-ai` 中的 provider profile 会自动发现并复用
 
 隔离测试可在插件条目设置 `config.balanceEnabled: false`，停止凭据解析与上游余额请求（默认仍开启）。必须显式将 `CLAUDE_CONFIG_DIR` 指向合成测试目录，否则原有默认行为仍扫描 `~/.claude/projects`。用量缓存升级为 v4，旧版缓存自动重算。0.2 上未变化的会话复用缓存、变化的会话经只读 handle 重新折叠，fork 继承历史不重复计费。真实余额和付费模型调用仍需独立验收。
 
-单条会话读不过时不再拖垮其余统计。响应的 `coverage` 描述宿主列出的会话，区分完整、部分与不可用，列出纳入/未纳入的会话及原因（`unsupported-format` / `unsupported-session-api` / `unsupported-host` / `read-failed`）。部分统计显示精确的可读小计，并保留可展开的覆盖度告警——数值不再加「≥」前缀。全部读不过时 `total: null`、界面显示「—」，不按零计算。失败记录清除旧小计、下次重试；这不等于修复宿主对旧格式的兼容，也不改写旧日志。会话列表整体读取失败仍返回错误。
+单条会话读不过时不再拖垮其余统计。响应的 `coverage` 描述宿主列出的会话，区分完整、部分与不可用，列出纳入/未纳入的会话及原因（`unsupported-format` / `unsupported-session-api` / `unsupported-host` / `read-failed`）。部分统计显示精确的可读小计，并保留可展开的覆盖度告警——数值不再加「≥」前缀。若被跳过的会话全部是旧格式（`unsupported-format`），告警改为静默样式（无警示点、弱化一行）且通道比例照常计算；只有可处理的原因（`read-failed` / `unsupported-session-api` / `unsupported-host`）才显示警示点并暂停比例。全部读不过时 `total: null`、界面显示「—」，不按零计算。失败记录清除旧小计、下次重试；这不等于修复宿主对旧格式的兼容，也不改写旧日志。会话列表整体读取失败仍返回错误。
 
 ## 支持的供应商
 
@@ -137,7 +137,7 @@ Moonshot / Kimi 等 `llm-pi-ai` 中的 provider profile 会自动发现并复用
 ```bash
 npm install           # 仅 react/react-dom/jsdom 用于离线测试
 npm run check         # 全量语法检查
-npm test              # 117 个离线测试：余额 scheme、token 折叠、服务端边界、客户端、e2e 交互流、Claude 聚合、发布与 0.2 契约、宿主兼容
+npm test              # 118 个离线测试：余额 scheme、token 折叠、服务端边界、客户端、e2e 交互流、Claude 聚合、发布与 0.2 契约、宿主兼容
 npm run test:compat   # 0.1.x / 0.1.5 形状的 Session API 契约
 npm run test:package # 运行时依赖与 client inject 契约
 ```

@@ -507,15 +507,17 @@ await test("closing the panel keeps the dock alive", async () => {
 	assert.equal(qa(".u_dockItem").length, 4, "pinned compacts persist");
 });
 
-await test("partial coverage uses a compact expandable notice and preserves exact readable subtotals", async () => {
+await test("legacy-only coverage stays quiet: exact subtotals, disclosure without warning dot", async () => {
 	usageResponse = () => okResponse({ ...USAGE, coverage: { status: "partial", totalSessions: 3, countedSessions: 2, skippedSessions: [{ sessionId: "old", reason: "unsupported-format" }] } });
 	await freshMount();
 	q(".u_dockItem[data-widget=balance]").click();
 	await sleep(100);
 	const notice = q('.u_coverage');
 	assert.equal(notice.tagName, "DETAILS");
+	assert.ok(notice.classList.contains("u_coverageQuiet"), "legacy-only uses the quiet style");
+	assert.equal(q('.u_coverageDot'), null, "no warning dot for legacy-only coverage");
 	assert.equal(notice.open, false, "full explanation starts collapsed");
-	assert.equal(q('.u_coverageLabel').textContent, "部分统计 · 1 条会话未计入");
+	assert.equal(q('.u_coverageLabel').textContent, "旧格式会话 1 条未计入");
 	assert.equal(q('.u_coverageLabel').getAttribute("role"), "status");
 	assert.equal(q('.u_error'), null, "partial coverage is not styled as an error banner");
 	assert.equal(getComputedStyle(notice).backgroundColor, "rgba(0, 0, 0, 0)", "no yellow background");
@@ -524,9 +526,8 @@ await test("partial coverage uses a compact expandable notice and preserves exac
 	q('.u_coverageSummary').click();
 	assert.equal(notice.open, true, "summary click opens the native disclosure");
 	assert.equal(getComputedStyle(q('.u_coverageDetails')).display, "flex");
-	assert.equal(q('.u_coverageText').textContent, "已排除无法读取的会话，数值为可读小计");
+	assert.equal(q('.u_coverageText').textContent, "0.1 旧格式（压缩）会话无法被当前宿主读取，已排除在可读小计之外。");
 	assert.equal(getComputedStyle(q('.u_coverageDetails')).alignItems, "center", "explanation and retry share one centered row");
-	assert.equal(getComputedStyle(q('.u_coverageText')).whiteSpace, "nowrap", "short explanation stays on one line");
 	assert.equal(getComputedStyle(q('.u_coverageDetails .u_retry')).lineHeight, "18px", "retry matches the explanation line height");
 	q('.u_coverageSummary').click();
 	assert.equal(notice.open, false, "second click collapses the explanation");
@@ -534,7 +535,7 @@ await test("partial coverage uses a compact expandable notice and preserves exac
 	assert.equal(q('.u_widget[data-widget=today] .u_statBig').textContent, "1.1k");
 	assert.equal(q('.u_dockItem[data-widget=month] .u_floatValue').textContent, "1.1k");
 	assert.ok(!q('[data-dsh-usage-panel]').textContent.includes("≥"), "values are exact subtotals, not lower bounds");
-	assert.equal(q('.u_dualBar'), null);
+	assert.ok(q('.u_dualBar') !== null, "legacy-only coverage still renders the channel share");
 	assert.equal(q('.u_widget[data-widget=balance] .u_balanceAmount').textContent, "¥128.00");
 	usageResponse = () => okResponse(USAGE);
 	q('.u_coverageSummary').click();
@@ -542,6 +543,21 @@ await test("partial coverage uses a compact expandable notice and preserves exac
 	await sleep(100);
 	assert.equal(q('.u_coverage'), null, "retry removes the notice when coverage recovers");
 	assert.equal(q('.u_widget[data-widget=today] .u_statBig').textContent, "1.1k");
+});
+
+await test("non-legacy coverage keeps the warning dot and the partial explanation", async () => {
+	usageResponse = () => okResponse({ ...USAGE, coverage: { status: "partial", totalSessions: 3, countedSessions: 2, skippedSessions: [{ sessionId: "broken", reason: "read-failed" }] } });
+	await freshMount();
+	q(".u_dockItem[data-widget=balance]").click();
+	await sleep(100);
+	const notice = q('.u_coverage');
+	assert.ok(notice !== null, "coverage notice rendered");
+	assert.ok(!notice.classList.contains("u_coverageQuiet"), "warning variant, not quiet");
+	assert.ok(q('.u_coverageDot') !== null, "warning dot present for actionable skips");
+	assert.equal(q('.u_coverageLabel').textContent, "部分统计 · 1 条会话未计入");
+	q('.u_coverageSummary').click();
+	assert.equal(q('.u_coverageText').textContent, "已排除无法读取的会话，数值为可读小计");
+	assert.equal(q('.u_dualBar'), null, "actionable skips still block the channel share");
 });
 
 await test("all unreadable records show unavailable, never zero tokens or a zero activity heatmap", async () => {

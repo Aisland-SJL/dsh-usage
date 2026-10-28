@@ -111,7 +111,7 @@ On 0.2 the provider directory addresses redacted live settings by entry id. Supp
 
 For isolated tests set the plugin entry's `config.balanceEnabled: false` to prevent credential resolution and upstream balance requests (default: enabled). Set `CLAUDE_CONFIG_DIR` explicitly to a synthetic test directory; otherwise the existing default still scans `~/.claude/projects`. Token cache v4 rebuilds older caches. On 0.2 unchanged session revisions are cached, changed sessions are refolded through read-only handles, and inherited fork history is not billed twice. Real account queries and paid model runs are separate acceptance work.
 
-Unreadable sessions no longer block the rest of the aggregation. The response's `coverage` describes the sessions listed by the host: `complete`, `partial`, or `unavailable`, with counted/skipped sessions and per-session reasons (`unsupported-format`, `unsupported-session-api`, `unsupported-host`, `read-failed`). Partial totals show the exact readable subtotal plus an expandable coverage notice — values are not prefixed with "≥". If no session can be read, totals are unavailable (`total: null`, “—” in the UI), not zero. Failed records are retried without retaining stale counts. This does not repair unsupported historical formats or rewrite their logs. A failure to list sessions still returns an error.
+Unreadable sessions no longer block the rest of the aggregation. The response's `coverage` describes the sessions listed by the host: `complete`, `partial`, or `unavailable`, with counted/skipped sessions and per-session reasons (`unsupported-format`, `unsupported-session-api`, `unsupported-host`, `read-failed`). Partial totals show the exact readable subtotal plus an expandable coverage notice — values are not prefixed with "≥". When every skipped session is a legacy `unsupported-format` log, the notice stays quiet (no warning dot, muted row) and the channel-share widget still renders; actionable reasons (`read-failed`, `unsupported-session-api`, `unsupported-host`) keep the warning dot and block the ratio. If no session can be read, totals are unavailable (`total: null`, “—” in the UI), not zero. Failed records are retried without retaining stale counts. This does not repair unsupported historical formats or rewrite their logs. A failure to list sessions still returns an error.
 
 ## Supported providers
 
@@ -137,7 +137,7 @@ Non-GET requests get `405`, non-loopback callers get `403`; every response is JS
 ```bash
 npm install           # react/react-dom/jsdom for offline tests only
 npm run check         # syntax checks for every module and script
-npm test              # 117 offline tests: balance schemes, token folding, server boundary, client, e2e flows, Claude aggregation, package + 0.2 contracts, host compatibility
+npm test              # 118 offline tests: balance schemes, token folding, server boundary, client, e2e flows, Claude aggregation, package + 0.2 contracts, host compatibility
 npm run test:compat   # 0.1.x / 0.1.5-shaped Session API contracts
 npm run test:package # runtime dependency + client inject contract
 ```
